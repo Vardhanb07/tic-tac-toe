@@ -1,15 +1,4 @@
 const gameboard = (function(){
-    let gameboardObject = {
-        1 : false,
-        2 : false,
-        3 : false,
-        4 : false,
-        5 : false,
-        6 : false,
-        7 : false,
-        8 : false,
-        9 : false
-    }
     let firstPlayerName = ''
     let secondPlayerName = ''
     let firstPlayerGameChoices = []
@@ -17,91 +6,101 @@ const gameboard = (function(){
     function firstPlayer(...firstPlayerChoices){
         let choices = Array.prototype.slice.call(firstPlayerChoices)
         choices.forEach(choice => {
-            gameboardObject.choice = true
             firstPlayerGameChoices.push(choice)
         })
     }
     function secondPlayer(...secondPlayerChoices){
         let choices = Array.prototype.slice.call(secondPlayerChoices)
         choices.forEach(choice => {
-            gameboardObject.choice = true
             secondPlayerGameChoices.push(choice)
         })
     }
     let firstPlayerWin = false
     let secondPlayerWin = false
-    function decideWin(x = firstPlayerGameChoices, y = secondPlayerGameChoices){
-        if(x.includes(1) && x.includes(2) && x.includes(3)){
+    function decideWin(x , o ){
+        if(x.includes('1') && x.includes('2') && x.includes('3')){
             firstPlayerWin = true
-        }else if(x.includes(4) && x.includes(5) && x.includes(6)){
+        }else if(x.includes('4') && x.includes('5') && x.includes('6')){
             firstPlayerWin = true
-        }else if(x.includes(7) && x.includes(8) && x.includes(9)){
+        }else if(x.includes('7') && x.includes('8') && x.includes('9')){
             firstPlayerWin = true
-        }else if(x.includes(1) && x.includes(4) && x.includes(7)){
+        }else if(x.includes('1') && x.includes('4') && x.includes('7')){
             firstPlayerWin = true
-        }else if(x.includes(2) && x.includes(5) && x.includes(8)){
+        }else if(x.includes('2') && x.includes('5') && x.includes('8')){
             firstPlayerWin = true
-        }else if(x.includes(3) && x.includes(6) && x.includes(9)){
+        }else if(x.includes('3') && x.includes('6') && x.includes('9')){
             firstPlayerWin = true
-        }else if(x.includes(1) && x.includes(5) && x.includes(9)){
+        }else if(x.includes('1') && x.includes('5') && x.includes('9')){
             firstPlayerWin = true
-        }else if(x.includes(3) && x.includes(5) && x.includes(7)){
+        }else if(x.includes('3') && x.includes('5') && x.includes('7')){
             firstPlayerWin = true
         }
-        if(y.includes(1) && y.includes(2) && y.includes(3)){
+        if(o.includes('1') && o.includes('2') && o.includes('3')){
             secondPlayerWin = true
-        }else if(y.includes(4) && y.includes(5) && y.includes(6)){
+        }else if(o.includes('4') && o.includes('5') && o.includes('6')){
             secondPlayerWin = true
-        }else if(y.includes(7) && y.includes(8) && y.includes(9)){
+        }else if(o.includes('7') && o.includes('8') && o.includes('9')){
             secondPlayerWin = true
-        }else if(y.includes(1) && y.includes(4) && y.includes(7)){
+        }else if(o.includes('1') && o.includes('4') && o.includes('7')){
             secondPlayerWin = true
-        }else if(y.includes(2) && y.includes(5) && y.includes(8)){
+        }else if(o.includes('2') && o.includes('5') && o.includes('8')){
             secondPlayerWin = true
-        }else if(y.includes(3) && y.includes(6) && y.includes(9)){
+        }else if(o.includes('3') && o.includes('6') && o.includes('9')){
             secondPlayerWin = true
-        }else if(y.includes(1) && y.includes(5) && y.includes(9)){
+        }else if(o.includes('1') && o.includes('5') && o.includes('9')){
             secondPlayerWin = true
-        }else if(y.includes(3) && y.includes(5) && y.includes(7)){
+        }else if(o.includes('3') && o.includes('5') && o.includes('7')){
             secondPlayerWin = true
         }
         if(secondPlayerWin == true && firstPlayerWin == true){
             return 'It\'s a tie!'
         }else if(secondPlayerWin == true){
-            return ' lose!'
+            return 'You lose!'
         }else if(firstPlayerWin == true){
             return 'You win!'
+        }else {
+            return 'It\'s a tie'
         }
     }
-    return {firstPlayer, secondPlayer, decideWin, gameboardObject, firstPlayerName, secondPlayerName} 
+    return {firstPlayer, secondPlayer, decideWin, firstPlayerName, secondPlayerName, firstPlayerGameChoices, secondPlayerGameChoices} 
 })()
-const cols = document.querySelectorAll('.col')
+let c = 0
+const cols = document.querySelectorAll(".col")
 cols.forEach(col => {
     col.addEventListener('click', () => {
-        const dataNo = col.getAttribute('data-no')
-        gameboard.gameboardObject[dataNo] = true;
-        col.style.backgroundColor = 'white'
-        col.style.backgroundImage = 'url(./assets/svgs/alpha-x.svg)'
-        col.style.backgroundRepeat = 'no-repeat'
-        col.style.backgroundPosition = 'center'
-    })
+        if(!(gameboard.firstPlayerName == '') && !(gameboard.secondPlayerName == '')){
+            const dataNo = col.getAttribute('data-no')
+            c++
+            if(!(c%2)){
+                gameboard.firstPlayer(dataNo)
+                col.style.backgroundColor = 'white'
+                col.style.backgroundImage = 'url(./assets/svgs/alpha-o.svg)'
+                col.style.backgroundRepeat = 'no-repeat'
+                col.style.backgroundPosition = 'center'
+                
+            }else {
+                gameboard.secondPlayer(dataNo)
+                col.style.backgroundColor = 'white'
+                col.style.backgroundImage = 'url(./assets/svgs/alpha-x.svg)'
+                col.style.backgroundRepeat = 'no-repeat'
+                col.style.backgroundPosition = 'center'
+                if(c == 9){
+                    console.log(gameboard.decideWin(gameboard.firstPlayerGameChoices, gameboard.secondPlayerGameChoices))
+                }
+            }
+        }
+    },{once : true})
 })
 const start = document.querySelector('.start')
 start.addEventListener('click', () => {
     gameboard.firstPlayerName = document.querySelector('#player-1').value
     gameboard.secondPlayerName = document.querySelector('#player-2').value
     if(!(gameboard.firstPlayerName == '') && !(gameboard.secondPlayerName == '')){
-    console.log(gameboard.firstPlayerName)
-    console.log(gameboard.secondPlayerName)
     document.querySelector('.players-info').style.display = 'none'
     let div = document.createElement('div')
     let p = document.createElement('p')
-    p.classList.add = 'system-message'
-    p.textContent = 'Start the game!'
-    div.appendChild(p)
-    p = document.createElement('p')
     p.classList.add = 'player-name'
-    p.textContent = `It's ${gameboard.firstPlayerName} turn!`
+    p.textContent = `${gameboard.firstPlayerName}'s turn!`
     div.appendChild(p)
     document.querySelector('.player-space').appendChild(div)
     }
