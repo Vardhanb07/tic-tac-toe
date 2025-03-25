@@ -17,7 +17,7 @@ const gameboard = (function(){
     }
     let firstPlayerWin = false
     let secondPlayerWin = false
-    function decideWin(x , o ){
+    function decideWin(x , o , first, second){
         if(x.includes('1') && x.includes('2') && x.includes('3')){
             firstPlayerWin = true
         }else if(x.includes('4') && x.includes('5') && x.includes('6')){
@@ -55,9 +55,9 @@ const gameboard = (function(){
         if(secondPlayerWin == true && firstPlayerWin == true){
             return 'It\'s a tie!'
         }else if(secondPlayerWin == true){
-            return 'You lose!'
+            return  `${second} wins!`
         }else if(firstPlayerWin == true){
-            return 'You win!'
+            return `${first} wins!`
         }else {
             return 'It\'s a tie'
         }
@@ -77,15 +77,27 @@ cols.forEach(col => {
                 col.style.backgroundImage = 'url(./assets/svgs/alpha-o.svg)'
                 col.style.backgroundRepeat = 'no-repeat'
                 col.style.backgroundPosition = 'center'
-                
+                document.querySelector('.player-name').textContent = `${gameboard.firstPlayerName}'s turn!`
+                let rstring = gameboard.decideWin(gameboard.secondPlayerGameChoices, gameboard.firstPlayerGameChoices, gameboard.firstPlayerName, gameboard.secondPlayerName)
+                let first = gameboard.firstPlayerName
+                let second = gameboard.secondPlayerName
+                if(rstring === `${first} wins!` || rstring === `${second} wins!`){
+                    document.querySelector('.player-name').textContent = rstring
+                }
             }else {
                 gameboard.secondPlayer(dataNo)
                 col.style.backgroundColor = 'white'
                 col.style.backgroundImage = 'url(./assets/svgs/alpha-x.svg)'
                 col.style.backgroundRepeat = 'no-repeat'
                 col.style.backgroundPosition = 'center'
-                if(c == 9){
-                    console.log(gameboard.decideWin(gameboard.firstPlayerGameChoices, gameboard.secondPlayerGameChoices))
+                let rstring = gameboard.decideWin(gameboard.secondPlayerGameChoices, gameboard.firstPlayerGameChoices,gameboard.firstPlayerName, gameboard.secondPlayerName)
+                let first = gameboard.firstPlayerName
+                let second = gameboard.secondPlayerName
+                if(c < 9){
+                    document.querySelector('.player-name').textContent = `${gameboard.secondPlayerName}'s turn!`
+                }
+                if(rstring === `${first} wins!` || rstring === `${second} wins!`){
+                    document.querySelector('.player-name').textContent = rstring
                 }
             }
         }
@@ -99,7 +111,7 @@ start.addEventListener('click', () => {
     document.querySelector('.players-info').style.display = 'none'
     let div = document.createElement('div')
     let p = document.createElement('p')
-    p.classList.add = 'player-name'
+    p.classList.add('player-name')
     p.textContent = `${gameboard.firstPlayerName}'s turn!`
     div.appendChild(p)
     document.querySelector('.player-space').appendChild(div)
