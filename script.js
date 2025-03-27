@@ -67,7 +67,7 @@ const gameboard = (function(){
 let c = 0
 const cols = document.querySelectorAll(".col")
 cols.forEach(col => {
-    col.addEventListener('click', () => {
+    col.addEventListener('click', function gameLogic(event) {
         if(!(gameboard.firstPlayerName == '') && !(gameboard.secondPlayerName == '')){
             const dataNo = col.getAttribute('data-no')
             c++
@@ -77,12 +77,16 @@ cols.forEach(col => {
                 col.style.backgroundImage = 'url(./assets/svgs/alpha-o.svg)'
                 col.style.backgroundRepeat = 'no-repeat'
                 col.style.backgroundPosition = 'center'
+                col.setAttribute('data-used', 'used')
                 document.querySelector('.player-name').textContent = `${gameboard.firstPlayerName}'s turn!`
                 let rstring = gameboard.decideWin(gameboard.secondPlayerGameChoices, gameboard.firstPlayerGameChoices, gameboard.firstPlayerName, gameboard.secondPlayerName)
                 let first = gameboard.firstPlayerName
                 let second = gameboard.secondPlayerName
                 if(rstring === `${first} wins!` || rstring === `${second} wins!`){
                     document.querySelector('.player-name').textContent = rstring
+                    document.querySelector('.game').remove()
+                    gameboard.firstPlayerGameChoices = []
+                    gameboard.secondPlayerGameChoices = []
                 }
             }else {
                 gameboard.secondPlayer(dataNo)
@@ -90,6 +94,7 @@ cols.forEach(col => {
                 col.style.backgroundImage = 'url(./assets/svgs/alpha-x.svg)'
                 col.style.backgroundRepeat = 'no-repeat'
                 col.style.backgroundPosition = 'center'
+                col.setAttribute('data-used', 'used')
                 let rstring = gameboard.decideWin(gameboard.secondPlayerGameChoices, gameboard.firstPlayerGameChoices,gameboard.firstPlayerName, gameboard.secondPlayerName)
                 let first = gameboard.firstPlayerName
                 let second = gameboard.secondPlayerName
@@ -98,6 +103,9 @@ cols.forEach(col => {
                 }
                 if(rstring === `${first} wins!` || rstring === `${second} wins!`){
                     document.querySelector('.player-name').textContent = rstring
+                    document.querySelector('.game').remove()
+                    gameboard.firstPlayerGameChoices = []
+                    gameboard.secondPlayerGameChoices = []
                 }
             }
         }
@@ -115,5 +123,28 @@ start.addEventListener('click', () => {
     p.textContent = `${gameboard.firstPlayerName}'s turn!`
     div.appendChild(p)
     document.querySelector('.player-space').appendChild(div)
+    }
+})
+const restart = document.querySelector('.restart')
+restart.addEventListener('click', () => {
+    console.log(gameboard.firstPlayerGameChoices)
+    console.log(gameboard.secondPlayerGameChoices)
+    if(gameboard.firstPlayerName != '' && gameboard.secondPlayerName != ''){
+        if(document.querySelector('.game') != null){
+            document.querySelector('.game').remove()
+        }
+        let game = document.createElement('div')
+        game.classList.add('game')
+        for(let i = 0; i < 3 ;i++){
+            let row = document.createElement('div')
+            row.classList.add('row')
+            for(let j = 0; j < 3; j++){
+                let col = document.createElement('div')
+                col.classList.add('col')
+                row.appendChild(col)
+            }
+            game.appendChild(row)
+        }
+        document.querySelector('.background').appendChild(game)
     }
 })
