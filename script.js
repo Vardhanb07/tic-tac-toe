@@ -1,8 +1,10 @@
-const gameboard = (function(){
+let gameboard = (function(){
     let firstPlayerName = ''
     let secondPlayerName = ''
     let firstPlayerGameChoices = []
     let secondPlayerGameChoices = []
+    let firstPlayerWin = false
+    let secondPlayerWin = false
     function firstPlayer(...firstPlayerChoices){
         let choices = Array.prototype.slice.call(firstPlayerChoices)
         choices.forEach(choice => {
@@ -15,8 +17,21 @@ const gameboard = (function(){
             secondPlayerGameChoices.push(choice)
         })
     }
-    let firstPlayerWin = false
-    let secondPlayerWin = false
+    function flush(){
+        firstPlayerGameChoices = []
+        secondPlayerGameChoices = []
+        firstPlayerWin = false
+        secondPlayerWin = false
+        return {firstPlayerGameChoices, secondPlayerGameChoices, firstPlayerWin, secondPlayerWin}
+    }
+    function get(){
+        return {
+            firstPlayerGameChoices,
+            secondPlayerGameChoices,
+            firstPlayerWin,
+            secondPlayerWin
+        }
+    }
     function decideWin(x , o , first, second){
         if(x.includes('1') && x.includes('2') && x.includes('3')){
             firstPlayerWin = true
@@ -62,7 +77,7 @@ const gameboard = (function(){
             return 'It\'s a tie'
         }
     }
-    return {firstPlayer, secondPlayer, decideWin, firstPlayerName, secondPlayerName, firstPlayerGameChoices, secondPlayerGameChoices} 
+    return {firstPlayer, secondPlayer, decideWin, firstPlayerName, secondPlayerName, firstPlayerGameChoices, secondPlayerGameChoices, flush, get} 
 })()
 let c = 0
 const cols = document.querySelectorAll(".col")
@@ -85,8 +100,10 @@ cols.forEach(col => {
                 if(rstring === `${first} wins!` || rstring === `${second} wins!`){
                     document.querySelector('.player-name').textContent = rstring
                     document.querySelector('.game').remove()
-                    gameboard.firstPlayerGameChoices = []
-                    gameboard.secondPlayerGameChoices = []
+                    gameboard.flush()
+                }
+                if(c == 9){
+                    document.querySelector('.player-name').textContent = "It's a tie!"
                 }
             }else {
                 gameboard.secondPlayer(dataNo)
@@ -104,8 +121,10 @@ cols.forEach(col => {
                 if(rstring === `${first} wins!` || rstring === `${second} wins!`){
                     document.querySelector('.player-name').textContent = rstring
                     document.querySelector('.game').remove()
-                    gameboard.firstPlayerGameChoices = []
-                    gameboard.secondPlayerGameChoices = []
+                    gameboard.flush()
+                }
+                if(c == 9){
+                    document.querySelector('.player-name').textContent = "It's a tie!"
                 }
             }
         }
@@ -127,12 +146,11 @@ start.addEventListener('click', () => {
 })
 const restart = document.querySelector('.restart')
 restart.addEventListener('click', () => {
-    console.log(gameboard.firstPlayerGameChoices)
-    console.log(gameboard.secondPlayerGameChoices)
     if(gameboard.firstPlayerName != '' && gameboard.secondPlayerName != ''){
         if(document.querySelector('.game') != null){
             document.querySelector('.game').remove()
         }
+        let k = 1
         let game = document.createElement('div')
         game.classList.add('game')
         for(let i = 0; i < 3 ;i++){
@@ -141,10 +159,66 @@ restart.addEventListener('click', () => {
             for(let j = 0; j < 3; j++){
                 let col = document.createElement('div')
                 col.classList.add('col')
+                col.setAttribute('data-no', `${k}`)
                 row.appendChild(col)
+                k++
             }
             game.appendChild(row)
         }
         document.querySelector('.background').appendChild(game)
+        c  = 0
+        gameboard.flush()
+        let cols = document.querySelectorAll('.col')
+        cols.forEach(col => {
+            col.addEventListener('click', () => {
+                if(gameboard.firstPlayerName != '' && gameboard.secondPlayerName != ''){
+                    let dataNo = col.getAttribute('data-no')
+                    const first = gameboard.firstPlayerName
+                    const second = gameboard.secondPlayerName
+                    console.log(gameboard.get().firstPlayerGameChoices)
+                    console.log(gameboard.get().secondPlayerGameChoices)
+                    console.log(gameboard.get().firstPlayerWin)
+                    console.log(gameboard.get().secondPlayerWin)
+                    c++
+                    if(!(c%2)){
+                        document.querySelector('.player-name').textContent = `${first}'s turn`
+                        gameboard.firstPlayer(dataNo)
+                        col.style.backgroundColor = 'white'
+                        col.style.backgroundImage = 'url(./assets/svgs/alpha-o.svg)'
+                        col.style.backgroundRepeat = 'no-repeat'
+                        col.style.backgroundPosition = 'center'
+                        col.setAttribute('data-used', 'used')
+                        let rstring = gameboard.decideWin(gameboard.get().secondPlayerGameChoices, gameboard.get().firstPlayerGameChoices, gameboard.firstPlayerName, gameboard.secondPlayerName)
+                        console.log(rstring)
+                        if(rstring === `${first} wins!` || rstring === `${second} wins!`){
+                            document.querySelector('.player-name').textContent = rstring
+                            document.querySelector('.game').remove()
+                            gameboard.flush()
+                        }
+                        if(c == 9){
+                            document.querySelector('.player-name').textContent = "It's a tie!"
+                        }
+                    }else {
+                        document.querySelector('.player-name').textContent = `${second}'s turn`
+                        gameboard.secondPlayer(dataNo)
+                        col.style.backgroundColor = 'white'
+                        col.style.backgroundImage = 'url(./assets/svgs/alpha-x.svg)'
+                        col.style.backgroundRepeat = 'no-repeat'
+                        col.style.backgroundPosition = 'center'
+                        col.setAttribute('data-used', 'used')
+                        let rstring = gameboard.decideWin(gameboard.get().secondPlayerGameChoices, gameboard.get().firstPlayerGameChoices, gameboard.firstPlayerName, gameboard.secondPlayerName)
+                        console.log(rstring)
+                        if(rstring === `${first} wins!` || rstring === `${second} wins!`){
+                            document.querySelector('.player-name').textContent = rstring
+                            document.querySelector('.game').remove()
+                            gameboard.flush()
+                        }
+                        if(c == 9){
+                            document.querySelector('.player-name').textContent = "It's a tie!"
+                        }
+                    }
+                }
+            }, {once : true})
+        })
     }
 })
