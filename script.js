@@ -175,10 +175,6 @@ restart.addEventListener('click', () => {
                     let dataNo = col.getAttribute('data-no')
                     const first = gameboard.firstPlayerName
                     const second = gameboard.secondPlayerName
-                    console.log(gameboard.get().firstPlayerGameChoices)
-                    console.log(gameboard.get().secondPlayerGameChoices)
-                    console.log(gameboard.get().firstPlayerWin)
-                    console.log(gameboard.get().secondPlayerWin)
                     c++
                     if(!(c%2)){
                         document.querySelector('.player-name').textContent = `${first}'s turn`
@@ -189,7 +185,6 @@ restart.addEventListener('click', () => {
                         col.style.backgroundPosition = 'center'
                         col.setAttribute('data-used', 'used')
                         let rstring = gameboard.decideWin(gameboard.get().secondPlayerGameChoices, gameboard.get().firstPlayerGameChoices, gameboard.firstPlayerName, gameboard.secondPlayerName)
-                        console.log(rstring)
                         if(rstring === `${first} wins!` || rstring === `${second} wins!`){
                             document.querySelector('.player-name').textContent = rstring
                             document.querySelector('.game').remove()
@@ -207,7 +202,6 @@ restart.addEventListener('click', () => {
                         col.style.backgroundPosition = 'center'
                         col.setAttribute('data-used', 'used')
                         let rstring = gameboard.decideWin(gameboard.get().secondPlayerGameChoices, gameboard.get().firstPlayerGameChoices, gameboard.firstPlayerName, gameboard.secondPlayerName)
-                        console.log(rstring)
                         if(rstring === `${first} wins!` || rstring === `${second} wins!`){
                             document.querySelector('.player-name').textContent = rstring
                             document.querySelector('.game').remove()
